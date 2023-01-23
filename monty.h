@@ -44,18 +44,21 @@ stack_t *top;
 stack_t *front;
 stack_t *rear;
 instruction_t *code;
-void (*f_list[15])(stack_t **stack, unsigned int line_number);
-char *opcodes[16];
+void (*f_list[16])(stack_t **stack, unsigned int line_number);
+char *opcodes[17];
 unsigned int line_number;
 
 
 /* function declarations */
 
 stack_t *get_node(void);
-int is_empty(void);
+int is_empty(stack_t **stack);
 stack_t *add_node(stack_t **head, int n);
 stack_t *add_node_end(stack_t **head, int n);
 size_t stack_t_len(stack_t *h);
+void free_stack_t(stack_t *head);
+int isdigit(int ch);
+void error_exit(stack_t **stack);
 int isint(char *str);
 void push(char *arg);
 void pall(stack_t **stack, unsigned int line_number);
@@ -63,6 +66,7 @@ void pop(stack_t **stack, unsigned int line_number);
 void pint(stack_t **stack, unsigned int line_number);
 void pop(stack_t **stack, unsigned int line_number);
 void swap(stack_t **stack, unsigned int line_number);
+void nop(stack_t **stack, unsigned int line_number);
 void add(stack_t **stack, unsigned int line_number);
 void sub(stack_t **stack, unsigned int line_number);
 void _div(stack_t **stack, unsigned int line_number);

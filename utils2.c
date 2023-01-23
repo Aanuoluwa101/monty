@@ -74,11 +74,12 @@ void parse(char *line, char **instruction)
 
 	n = 0;
 	token = strtok(line, " \n");
-	while (n <= 2)
+	instruction[n] = token;
+	while (n <= 1)
 	{
-		instruction[n] = token;
-		token = strtok(NULL, " \n");
 		n++;
+		token = strtok(NULL, " \n");
+		instruction[n] = token;
 	}
 }
 
@@ -104,5 +105,6 @@ void get_functions(void)
 	f_list[12] = rotr;
 	f_list[13] = _stack;
 	f_list[14] = _queue;
+	f_list[15] = nop;
 }
 

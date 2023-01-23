@@ -19,17 +19,18 @@ int main(int argc, char **argv)
 
 	if (argc > 2 || argc == 1)
 	{
-		printf("USAGE: monty file\n");
-		exit(EXIT_FAILURE);
+		fprintf(stderr, "USAGE: monty file\n");
+		error_exit(&top);
 	}
 
 	fp = fopen(argv[1], "r");
 	if (fp == NULL)
 	{
-		printf("Error: Can't open file %s\n", argv[1]);
-		exit(EXIT_FAILURE);
+		fprintf(stderr, "Error: Can't open file %s\n", argv[1]);
+		error_exit(&top);
 	}
 	monty_loop(fp);
+	fclose(fp);
 
 	return (0);
 }

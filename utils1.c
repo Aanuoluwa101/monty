@@ -12,20 +12,21 @@ stack_t *get_node(void)
 	node = malloc(sizeof(stack_t));
 	if (node == NULL)
 	{
-		printf("Error: malloc failed\n");
-		exit(EXIT_FAILURE);
+		fprintf(stderr, "Error: malloc failed\n");
+		error_exit(&top);
 	}
 	return (node);
 }
 
 /**
  * is_empty - checks if stack or queue is empty
+ * @stack: pointer to the top of the stack
  *
  * Return: 1 if empty, 0 otherwise
  */
-int is_empty(void)
+int is_empty(stack_t **stack)
 {
-	if (top == NULL)
+	if (*stack == NULL)
 		return (1);
 	else
 		return (0);
@@ -102,15 +103,27 @@ int isint(char *str)
 {
 	int n;
 
+	if (str == NULL)
+		return (0);
+
 	if (strlen(str) == 1)
 	{
 		if (str[0] == '0')
 			return (1);
 	}
 
-	n = atoi(str);
-	if (n == 0)
-		return (0);
-	else
-		return (1);
+	n = 0;
+	while (str[n])
+	{
+		if (str[n] == '-')
+		{
+			n++;
+			continue;
+		}
+
+		if (!isdigit(str[n]))
+			return (0);
+		n++;
+	}
+	return (1);
 }

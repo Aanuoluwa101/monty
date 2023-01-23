@@ -12,8 +12,8 @@ void push(char *arg)
 
 	if (!(isint(arg)) || arg == NULL)
 	{
-		printf("L%d: usage: push integer\n", line_number);
-		exit(EXIT_FAILURE);
+		fprintf(stderr, "L%d: usage: push integer\n", line_number);
+		error_exit(&top);
 	}
 
 	if (stack_switch == 1)
@@ -23,8 +23,8 @@ void push(char *arg)
 
 	if (node == NULL)
 	{
-		printf("Error: malloc failed\n");
-		exit(EXIT_FAILURE);
+		fprintf(stderr, "Error: malloc failed\n");
+		error_exit(&top);
 	}
 
 	if (stack_switch == 1)
@@ -48,14 +48,15 @@ void pall(stack_t **stack, unsigned int line_number)
 	stack_t *temp;
 
 	UNUSED(line_number);
-	if (is_empty())
-		return;
 
-	temp = *stack;
-	while (temp)
+	if (!is_empty(stack))
 	{
-		printf("%d\n", temp->n);
-		temp = temp->next;
+		temp = *stack;
+		while (temp)
+		{
+			printf("%d\n", temp->n);
+			temp = temp->next;
+		}
 	}
 }
 
@@ -68,10 +69,10 @@ void pall(stack_t **stack, unsigned int line_number)
  */
 void pint(stack_t **stack, unsigned int line_number)
 {
-	if (is_empty())
+	if (is_empty(stack))
 	{
-		printf("L%d: can't pint, stack empty\n", line_number);
-		exit(EXIT_FAILURE);
+		fprintf(stderr, "L%d: can't pint, stack empty\n", line_number);
+		error_exit(stack);
 	}
 
 	printf("%d\n", (*stack)->n);
@@ -88,10 +89,10 @@ void pop(stack_t **stack, unsigned int line_number)
 {
 	stack_t *temp;
 
-	if (is_empty())
+	if (is_empty(stack))
 	{
-		printf("L%d: can't pop an empty stack\n", line_number);
-		exit(EXIT_FAILURE);
+		fprintf(stderr, "L%d: can't pop an empty stack\n", line_number);
+		error_exit(stack);
 	}
 
 	temp = *stack;
@@ -100,7 +101,7 @@ void pop(stack_t **stack, unsigned int line_number)
 	free(temp);
 	front = top;
 
-	if (is_empty())
+	if (is_empty(stack))
 		rear = *stack;
 }
 
@@ -118,8 +119,8 @@ void swap(stack_t **stack, unsigned int line_number)
 
 	if (stack_t_len(*stack) < 2)
 	{
-		printf("L%d: can't swap, stack too short\n", line_number);
-		exit(EXIT_FAILURE);
+		fprintf(stderr, "L%d: can't swap, stack too short\n", line_number);
+		error_exit(stack);
 	}
 
 	first = (*stack)->n;

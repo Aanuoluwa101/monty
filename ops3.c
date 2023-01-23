@@ -2,9 +2,13 @@
 
 /**
  * nop - does nothing
+ * @stack: pointer to the top of the stack
+ * @line_number: line_number
  */
-void nop(void)
+void nop(stack_t **stack, unsigned int line_number)
 {
+	UNUSED(stack);
+	UNUSED(line_number);
 	;
 }
 
@@ -19,21 +23,22 @@ void pchar(stack_t **stack, unsigned int line_number)
 {
 	int n;
 
-	if (is_empty())
+	if (is_empty(stack))
 	{
-		printf("L%d: can't pchar, stack empty\n", line_number);
-		exit(EXIT_FAILURE);
+		fprintf(stderr, "L%d: can't pchar, stack empty\n", line_number);
+		error_exit(stack);
 	}
 
 	n = (*stack)->n;
 
 	if (n < 0 || n > 127)
 	{
-		printf("L%d: can't pchar, value out of range\n", line_number);
-		exit(EXIT_FAILURE);
+		fprintf(stderr, "L%d: can't pchar, value out of range\n", line_number);
+		error_exit(stack);
 	}
 
-	printf("%c\n", n);
+	putchar(n);
+	putchar('\n');
 }
 
 /**
@@ -47,23 +52,21 @@ void pchar(stack_t **stack, unsigned int line_number)
 void pstr(stack_t **stack, unsigned int line_number)
 {
 	stack_t *temp;
+	int chr;
 
 	UNUSED(line_number);
-	if (is_empty())
-	{
-		printf("\n");
-		return;
-	}
-
 	temp = *stack;
+
 	while (temp)
 	{
-		if (temp->n == 0)
+		chr = temp->n;
+		if (chr == 0)
 			break;
-		else if (temp->n < 0 || temp->n > 127)
+		else if (chr < 0 || chr > 127)
 			break;
 
-		printf("%c", temp->n);
+		printf("%c", chr);
+		temp = temp->next;
 	}
 
 	printf("\n");
@@ -76,24 +79,26 @@ void pstr(stack_t **stack, unsigned int line_number)
  *
  * Return: nothing
  */
-void rotl(stack_t **stack,unsigned int line_number)
+void rotl(stack_t **stack, unsigned int line_number)
 {
-	int n;
-	stack_t *node;
+	stack_t *first;
+	stack_t *temp;
 
-	if (is_empty())
-		return;
-
-	n = (*stack)->n;
-	node = add_node_end(stack, n);
-
-	if (node == NULL)
+	UNUSED(line_number);
+	if (!is_empty(stack) && stack_t_len(*stack) >= 2)
 	{
-		printf("Error: malloc failed\n");
-		exit(EXIT_FAILURE);
-	}
+		first = *stack;
+		temp = *stack;
 
-	pop(stack, line_number);
+		while (temp->next != NULL)
+			temp = temp->next;
+
+		temp->next = first;
+		first->prev = temp;
+		*stack = (*stack)->next;
+		first->next = NULL;
+		(*stack)->prev = NULL;
+	}
 }
 
 /**
@@ -103,9 +108,21 @@ void rotl(stack_t **stack,unsigned int line_number)
  *
  * Return: nothing
  */
-void rotr(stack_t **stack,unsigned int line_number)
+void rotr(stack_t **stack, unsigned int line_number)
 {
-	UNUSED(stack);
+	stack_t *last;
+
 	UNUSED(line_number);
-	;
+	if (!is_empty(stack) && stack_t_len(*stack) >= 2)
+	{
+		last = *stack;
+		while (last->next != NULL)
+			last = last->next;
+
+		last->prev->next = NULL;
+		last->next = *stack;
+		last->prev = NULL;
+		(*stack)->prev = last;
+		*stack = last;
+	}
 }

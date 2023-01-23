@@ -17,13 +17,16 @@ void monty_loop(FILE *fp)
 	line = NULL;
 	while ((read = getline(&line, &len, fp)) != -1)
 	{
-		code = malloc(sizeof(stack_t));
+		code = malloc(sizeof(instruction_t));
 		instruction = malloc(3 * sizeof(char *));
 
 		if (code == NULL || instruction == NULL)
 		{
-			 printf("Error: malloc failed\n");
-			 exit(EXIT_FAILURE);
+			fprintf(stderr, "Error: malloc failed\n");
+			free(line);
+			free(code);
+			fclose(fp);
+			error_exit(&top);
 		}
 
 		parse(line, instruction);
@@ -49,7 +52,12 @@ void monty_loop(FILE *fp)
  */
 void run_code(char **instruction)
 {
-	if (strcmp(code->opcode, "push") == 0)
+	if (code->opcode == NULL || code->opcode[0] == '#')
+	{
+		code->opcode = "nop";
+		(code->f)(&top, line_number);
+	}
+	else if (strcmp(code->opcode, "push") == 0)
 	{
 		push(instruction[1]);
 	}
@@ -59,8 +67,8 @@ void run_code(char **instruction)
 	}
 	else
 	{
-		printf("L%d: unknown instruction %s\n", line_number, code->opcode);
-		exit(EXIT_FAILURE);
+		fprintf(stderr, "L%d: unknown instruction %s\n", line_number, code->opcode);
+		error_exit(&top);
 	}
 }
 
@@ -86,5 +94,35 @@ void get_opcodes(void)
 	opcodes[12] = "rotr";
 	opcodes[13] = "stack";
 	opcodes[14] = "queue";
-	opcodes[15] = NULL;
+	opcodes[15] = "nop";
+	opcodes[16] = NULL;
+}
+
+/**
+ * free_stack_t - Frees a linked stack_t list.
+ * @head: The top of the stack_t list.
+ */
+void free_stack_t(stack_t *head)
+{
+	stack_t *temp;
+
+
+	while (head)
+	{
+		temp = head;
+		head = head->next;
+		free(temp);
+	}
+}
+
+/**
+ * error_exit - frees the stack and exits due to error
+ * @stack: pointer to the head of the stack
+ *
+ */
+void error_exit(stack_t **stack)
+{
+	if (*stack)
+		free_stack_t(*stack);
+	exit(EXIT_FAILURE);
 }

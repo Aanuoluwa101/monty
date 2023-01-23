@@ -1,0 +1,2 @@
+why didn't we need to use extern for the functions
+why did we have to do int stack_switch again in the main
